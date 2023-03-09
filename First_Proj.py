@@ -158,76 +158,79 @@ if log1>0:
             print(i[1])
             movies.append(i[1])
         print('\n')
-        moviee=str(input("What movie do you want to see: "))
-        if moviee not in movies:
-            print("Movie not available")
-        else:
-            #print("what")
-            print('\n')
-            for j in lst1:
-                if j[1]==moviee:
-                    print("Movie:",j[1])
-                    print("Description:",j[2])
-                    print("Genre:",j[3])
-                    print("Age Restriction:",j[4])
-                    print("Duration:",j[5],"minutes")
-                    print("Year Released:",j[6])
+        while True:
+            moviee=str(input("What movie do you want to see: "))
+            if moviee not in movies:
+                print("Movie not available")
+                continue
+            else:
+                #print("what")
+                print('\n')
+                for j in lst1:
+                    if j[1]==moviee:
+                        print("Movie:",j[1])
+                        print("Description:",j[2])
+                        print("Genre:",j[3])
+                        print("Age Restriction:",j[4])
+                        print("Duration:",j[5],"minutes")
+                        print("Year Released:",j[6])
 
-            print("Do you want more information about similar movies?\nYes/No")
+                print("Do you want more information about similar movies?\nYes/No")
 
-            while True:
-                info = (str(input("Enter: "))).lower()
-                if info=='no':
-                    print("Okay, thank you for using Netflix.")
-                    break
-                elif info=='yes':
-                    print("Okay, redirecting...\n")
-                    querystring = {"query": moviee, "limit_titles": "10"}
-                    # querystring= {'name':'Cars'}
-                    headers = {
-                        "X-RapidAPI-Key": "695383fc8amshe2de6b6b8b42f69p12c710jsn0e38bfd74c27",
-                        "X-RapidAPI-Host": "netflix54.p.rapidapi.com"
-                    }
+                while True:
+                    info = (str(input("Enter: "))).lower()
+                    if info=='no':
+                        print("Okay, thank you for using Netflix.")
+                        break
+                    elif info=='yes':
+                        print("Okay, redirecting...\n")
+                        querystring = {"query": moviee, "limit_titles": "10"}
+                        # querystring= {'name':'Cars'}
+                        headers = {
+                            "X-RapidAPI-Key": "695383fc8amshe2de6b6b8b42f69p12c710jsn0e38bfd74c27",
+                            "X-RapidAPI-Host": "netflix54.p.rapidapi.com"
+                        }
 
-                    response = requests.get(url, headers=headers, params=querystring)
-                    out = response.json()
-                    # print(type(out))
-                    # print(out)
-                    titles = out['titles']
-                    for i in titles:
-                        # print(type(i))
-                        # print(i)
-                        # print(i.keys())
-                        for j in i.keys():
-                            if j == 'jawSummary':
-                                #	print(i[j])
-                                for k in i[j].keys():
-                                    if k == 'cast' or k == 'creators' or k == 'directors' or k == 'writers' or k == 'genres' or k == 'contextualSynopsis' or k == 'maturity' or k == 'title' or k == 'releaseYear':
-                                        if type(i[j][k]) != list and type(i[j][k]) != dict:
-                                            dic1[k] = i[j][k]
+                        response = requests.get(url, headers=headers, params=querystring)
+                        out = response.json()
+                        # print(type(out))
+                        # print(out)
+                        titles = out['titles']
+                        for i in titles:
+                            # print(type(i))
+                            # print(i)
+                            # print(i.keys())
+                            for j in i.keys():
+                                if j == 'jawSummary':
+                                    #	print(i[j])
+                                    for k in i[j].keys():
+                                        if k == 'cast' or k == 'creators' or k == 'directors' or k == 'writers' or k == 'genres' or k == 'contextualSynopsis' or k == 'maturity' or k == 'title' or k == 'releaseYear':
+                                            if type(i[j][k]) != list and type(i[j][k]) != dict:
+                                                dic1[k] = i[j][k]
 
-                                        else:
-                                            if type(i[j][k]) == list:
-                                                for l in i[j][k]:
-                                                    # print(type(l))
-                                                    # print(l)
-                                                    dic1[k] = i[j][k][0]['name']
                                             else:
-                                                for l in i[j][k].keys():
-                                                    if type(i[j][k][l]) != dict:
-                                                        dic1[k] = i[j][k][l]
-                                                        break
-                                                    else:
-                                                        for m in i[j][k][l].keys():
-                                                            dic1[k] = i[j][k][l][m]
+                                                if type(i[j][k]) == list:
+                                                    for l in i[j][k]:
+                                                        # print(type(l))
+                                                        # print(l)
+                                                        dic1[k] = i[j][k][0]['name']
+                                                else:
+                                                    for l in i[j][k].keys():
+                                                        if type(i[j][k][l]) != dict:
+                                                            dic1[k] = i[j][k][l]
                                                             break
+                                                        else:
+                                                            for m in i[j][k][l].keys():
+                                                                dic1[k] = i[j][k][l][m]
+                                                                break
 
-                        for i in dic1.keys():
-                            print(i, ":", dic1[i])
+                            for i in dic1.keys():
+                                print(i, ":", dic1[i])
 
-                        print('\n')
-                    break
+                            print('\n')
+                        break
 
-                else:
-                    print("Please enter valid choice")
-                    continue
+                    else:
+                        print("Please enter valid choice")
+                        continue
+            break
