@@ -6,6 +6,9 @@ url = "https://netflix54.p.rapidapi.com/search/"
 dic={}
 lst=[]
 dic1={}
+log1=0
+sign=0
+amd=0
 
 db0 = sqltor.connect(host="localhost", user='root', passwd='pass', database='netflix')
 cursor = db0.cursor()
@@ -18,10 +21,6 @@ cursor.execute(str1)
 
 str4= "create table if not exists admin_id(email_id varchar(255) primary key, password varchar(20));"
 cursor.execute(str4)
-
-log1=0
-sign=0
-amd=0
 
 print("Do you want to sign up or login in?")
 print("Press 1 to log in, 2 to sign up.")
@@ -175,55 +174,60 @@ if log1>0:
                     print("Year Released:",j[6])
 
             print("Do you want more information about similar movies?\nYes/No")
-            info=(str(input("Enter: "))).lower()
-            if info=='no':
-                print("Okay, thank you for using Netflix.")
-            elif info=='yes':
-                print("Okay, redirecting...\n")
-                querystring = {"query": moviee, "limit_titles": "10"}
-                # querystring= {'name':'Cars'}
-                headers = {
-                    "X-RapidAPI-Key": "695383fc8amshe2de6b6b8b42f69p12c710jsn0e38bfd74c27",
-                    "X-RapidAPI-Host": "netflix54.p.rapidapi.com"
-                }
 
-                response = requests.get(url, headers=headers, params=querystring)
-                out = response.json()
-                # print(type(out))
-                # print(out)
-                titles = out['titles']
-                for i in titles:
-                    # print(type(i))
-                    # print(i)
-                    # print(i.keys())
-                    for j in i.keys():
-                        if j == 'jawSummary':
-                            #	print(i[j])
-                            for k in i[j].keys():
-                                if k == 'cast' or k == 'creators' or k == 'directors' or k == 'writers' or k == 'genres' or k == 'contextualSynopsis' or k == 'maturity' or k == 'title' or k == 'releaseYear':
-                                    if type(i[j][k]) != list and type(i[j][k]) != dict:
-                                        dic1[k] = i[j][k]
+            while True:
+                info = (str(input("Enter: "))).lower()
+                if info=='no':
+                    print("Okay, thank you for using Netflix.")
+                    break
+                elif info=='yes':
+                    print("Okay, redirecting...\n")
+                    querystring = {"query": moviee, "limit_titles": "10"}
+                    # querystring= {'name':'Cars'}
+                    headers = {
+                        "X-RapidAPI-Key": "695383fc8amshe2de6b6b8b42f69p12c710jsn0e38bfd74c27",
+                        "X-RapidAPI-Host": "netflix54.p.rapidapi.com"
+                    }
 
-                                    else:
-                                        if type(i[j][k]) == list:
-                                            for l in i[j][k]:
-                                                # print(type(l))
-                                                # print(l)
-                                                dic1[k] = i[j][k][0]['name']
+                    response = requests.get(url, headers=headers, params=querystring)
+                    out = response.json()
+                    # print(type(out))
+                    # print(out)
+                    titles = out['titles']
+                    for i in titles:
+                        # print(type(i))
+                        # print(i)
+                        # print(i.keys())
+                        for j in i.keys():
+                            if j == 'jawSummary':
+                                #	print(i[j])
+                                for k in i[j].keys():
+                                    if k == 'cast' or k == 'creators' or k == 'directors' or k == 'writers' or k == 'genres' or k == 'contextualSynopsis' or k == 'maturity' or k == 'title' or k == 'releaseYear':
+                                        if type(i[j][k]) != list and type(i[j][k]) != dict:
+                                            dic1[k] = i[j][k]
+
                                         else:
-                                            for l in i[j][k].keys():
-                                                if type(i[j][k][l]) != dict:
-                                                    dic1[k] = i[j][k][l]
-                                                    break
-                                                else:
-                                                    for m in i[j][k][l].keys():
-                                                        dic1[k] = i[j][k][l][m]
+                                            if type(i[j][k]) == list:
+                                                for l in i[j][k]:
+                                                    # print(type(l))
+                                                    # print(l)
+                                                    dic1[k] = i[j][k][0]['name']
+                                            else:
+                                                for l in i[j][k].keys():
+                                                    if type(i[j][k][l]) != dict:
+                                                        dic1[k] = i[j][k][l]
                                                         break
+                                                    else:
+                                                        for m in i[j][k][l].keys():
+                                                            dic1[k] = i[j][k][l][m]
+                                                            break
 
-                    for i in dic1.keys():
-                        print(i, ":", dic1[i])
+                        for i in dic1.keys():
+                            print(i, ":", dic1[i])
 
-                    print('\n')
+                        print('\n')
+                    break
 
-            else:
-                print("Please enter valid choice")
+                else:
+                    print("Please enter valid choice")
+                    continue
