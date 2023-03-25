@@ -1,10 +1,8 @@
 import mysql.connector as sqltor
 from datetime import date
 import requests
-import tabulate
 from tkinter import *
 from tkinter import messagebox
-from tkinter.font import *
 
 url = "https://netflix54.p.rapidapi.com/search/"
 dic={}
@@ -13,8 +11,9 @@ dic1={}
 log1=0
 sign=0
 amd=0
+num1=30
 
-db0 = sqltor.connect(host="localhost", user='root', passwd='pass', database='netflix1 ')
+db0 = sqltor.connect(host="localhost", user='root', passwd='Orchid7890', database='netflix1 ')
 cursor = db0.cursor()
 
 str2 = "create table if not exists admin(admin_email varchar(255), movie_name char(255), movie_description longtext,genre varchar(255), age_restriction varchar(255), duration integer, year_released integer);"
@@ -50,9 +49,9 @@ def loginx():
     passwordinput.place(x=280, y=70)
 
     def log():
-        global log1
+        log1=0
         global sign
-        global amd
+        amd=0
         global email
         email=emailinput.get()
         password=passwordinput.get()
@@ -60,8 +59,9 @@ def loginx():
         cursor.execute((login))
         lst = cursor.fetchall()
 
-
-        if len(lst) == 0:
+        if email=="" or password=="":
+            messagebox.showinfo("Error","Please enter all fields.")
+        elif len(lst) == 0:
             messagebox.showinfo("Error", "Please signup")
             sign()
             #sign += 1
@@ -171,6 +171,7 @@ def loginx():
 
             def exit():
                 top1.destroy()
+                amd=0
                 loginx()
             mainbutton2 = Button(top1, text="Exit", command=exit, bg="#90b4fc", fg="black")
             mainbutton2.place(x=127, y=110)
@@ -205,6 +206,7 @@ def loginx():
             Label1 = Label(top1, text="\n", bg="black", fg="white")
             Label1.pack()
             def movie():
+
                 top2 = Toplevel()
                 top2.configure(bg='black')
                 top2.geometry('1000x450')
@@ -232,7 +234,7 @@ def loginx():
                             ageLabel1.pack()
                             durationLabel1 = Label(top2, text="\nDuration ", bg="black", fg="white")
                             durationLabel1.pack()
-                            durLabel1 = Label(top2, text=j[5], bg="black", fg="white")
+                            durLabel1 = Label(top2, text=str(j[5])+" minutes", bg="black", fg="white")
                             durLabel1.pack()
                             yearLabel1 = Label(top2, text="\nYear ", bg="black", fg="white")
                             yearLabel1.pack()
@@ -287,17 +289,19 @@ def loginx():
                                                             dic1[k] = i[j][k][l][m]
                                                             break
                         #print(dic1)
-                        num1=30
+                        global num1
                         for i in dic1.keys():
                             #print(i, ":", dic1[i])
                             Label1 = Label(top3, text=i.capitalize(), bg="black", fg="white")
-                            Label1.pack()
-                            #Label2 = Label(top3, text=": ", bg="black", fg="white")
-                            #Label2.pack()
+                            Label1.place(x=30,y=num1)
+                            Label2 = Label(top3, text=": ", bg="black", fg="white")
+                            Label2.place(x=140,y=num1)
                             Label3 = Label(top3, text=dic1[i], bg="black", fg="white")
-                            Label3.pack()
-                            Label4 = Label(top2, text="\n\n\n", bg="black", fg="white")
-                            Label4.pack()
+                            Label3.place(x=160,y=num1)
+                            num1+=30
+                        num1+=10
+                        #Label4 = Label(top2, text="\n\n\n", bg="black", fg="white")
+                        #Label4.pack()
                 mainbutton3 = Button(top2, text="Explore More Movies", command=movieee, bg="#90b4fc", fg="black")
                 mainbutton3.pack()
                 mainbutton2 = Button(top2, text="Exit", command=exit, bg="#90b4fc", fg="black")
@@ -350,19 +354,26 @@ def sign():
             today = date.today()
             #print(email, password, phone, age, plan, today)
 
-            try:
-                log = "select * from login where email_id= '{}';".format(email)
-                cursor.execute((log))
-                lst1 = cursor.fetchall()
+
+            log = "select * from login where email_id= '{}';".format(email)
+            cursor.execute((log))
+            lst1 = cursor.fetchall()
+            #   print(lst1)
+            if len(lst1)>0:
                 messagebox.showinfo("Error","Username already exists")
                 top.destroy()
                 loginx()
-            except:
-                str3 = "insert into login values('{}','{}',{},{},'{}','{}');".format(email, password,phone, age, plan, today)
-                cursor.execute(str3)
-                db0.commit()
-                print("successfully signed up")
-                loginx()
+            else:
+                if email=="" or password== "" or phone== " " or age=="" or plan=="":
+                    messagebox.showinfo("Error","Please enter all fields.")
+                else:
+                    str3 = "insert into login values('{}','{}',{},{},'{}','{}');".format(email, password,phone, age, plan, today)
+                    cursor.execute(str3)
+                    db0.commit()
+                    messagebox.showinfo("Success!", "Successfully Signed Up")
+                    print("Successfully signed up")
+                    top.destroy()
+                    loginx()
         except:
             messagebox.showinfo("Error", "Please enter valid details")
 
